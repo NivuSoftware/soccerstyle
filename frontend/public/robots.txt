@@ -1,0 +1,7 @@
+﻿User-agent: *
+Allow: /
+Disallow: /acceso-soccerstyle
+Disallow: /panel-admin-soccerstyle
+Disallow: /buscar
+
+Sitemap: https://www.soccerstyle.ec/sitemap.xml

@@ -1,0 +1,10 @@
+.DS_Store
+__pycache__/
+*.pyc
+.env
+*.env
+backend/.env
+frontend/.env
+frontend/.vite/
+backend/data/*.json
+backend/products/
