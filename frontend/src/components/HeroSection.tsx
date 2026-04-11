@@ -47,7 +47,7 @@ const HeroSection = () => {
           />
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold leading-tight mb-6">
             Primera y única cadena en Ecuador dedicada{" "}
-            <span className="text-primary text-glow">100% al fútbol</span>
+            <span className="text-primary text-glow">100% al fútbol original</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-lg">
             Más de 10 años ofreciendo productos originales de alto rendimiento.

@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Shield, Star, Layers } from "lucide-react";
 
 const benefits = [
-  { icon: Shield, title: "Calidad Original", desc: "100% productos originales de las mejores marcas del mundo" },
+  { icon: Shield, title: "Producto Original", desc: "100% productos originales de las mejores marcas del mundo" },
   { icon: Star, title: "Servicio Premium", desc: "Asesoría especializada para encontrar tu calzado ideal" },
   { icon: Layers, title: "Gran Variedad", desc: "El catálogo más amplio de Ecuador en calzado y accesorios de fútbol" },
 ];

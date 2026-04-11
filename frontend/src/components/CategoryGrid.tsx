@@ -1,14 +1,17 @@
+import type { MouseEvent } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Category } from "@/data/products";
 import { getPublicCategoryPath } from "@/data/seo";
 import { useCatalog } from "@/context/CatalogContext";
+import { useCategoryPrompt } from "@/context/CategoryPromptContext";
+import LazyImage from "@/components/LazyImage";
 
 import catPupos from "@/assets/cat-pupos.jpg";
 import catPupillos from "@/assets/pupillos-futbol-ecuador.jpg";
 import catFutsal from "@/assets/zapatos-futsal-ecuador.jpg";
 import catGuantes from "@/assets/cat-guantes.jpg";
-import catRopa from "@/assets/cat-ropa.jpg";
+import catRopa from "@/assets/cat-ropa.jpeg";
 import catAccesorios from "@/assets/cat-accesorios.jpg";
 
 const categoryImages: Record<Category, string> = {
@@ -22,6 +25,25 @@ const categoryImages: Record<Category, string> = {
 
 const CategoryGrid = () => {
   const { availableCategories, isLoading } = useCatalog();
+  const { openCategoryPrompt } = useCategoryPrompt();
+
+  const handleCategoryClick = (
+    event: MouseEvent<HTMLAnchorElement>,
+    category: { slug: Category; label: string },
+  ) => {
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.shiftKey
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    openCategoryPrompt(category);
+  };
 
   if (!isLoading && availableCategories.length === 0) {
     return null;
@@ -53,15 +75,16 @@ const CategoryGrid = () => {
             >
               <Link
                 to={getPublicCategoryPath(cat.slug)}
+                onClick={(event) => handleCategoryClick(event, cat)}
                 className="group block relative w-full overflow-hidden rounded-xl aspect-square text-left"
               >
-                <img
+                <LazyImage
                   src={categoryImages[cat.slug]}
                   alt={`${cat.label} de fútbol en Riobamba, Latacunga y Ecuador`}
-                  loading="lazy"
                   width={800}
                   height={800}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  eager={i < 2}
+                  className="absolute inset-0 transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 border-2 border-primary/50 rounded-xl box-glow" />

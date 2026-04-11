@@ -16,7 +16,7 @@ interface SeoNarrativeProps {
 const FaqCard = ({ item }: { item: SeoFaqItem }) => (
   <article className="rounded-2xl border border-border/70 bg-card/65 p-5">
     <h3 className="font-display text-xl font-bold text-foreground">{item.question}</h3>
-    <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.answer}</p>
+    <p className="mt-3 text-justify text-sm leading-7 text-muted-foreground">{item.answer}</p>
   </article>
 );
 

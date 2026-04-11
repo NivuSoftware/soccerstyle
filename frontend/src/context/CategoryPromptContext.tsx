@@ -17,14 +17,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  type Category,
+  type CategorySizeMode,
   getCategoryPromptSizes,
   getCategorySizeMode,
   getNationalSizeFromUs,
   normalizeCategorySize,
 } from "@/data/products";
+import { getPublicCategoryPath } from "@/data/seo";
 
 interface CategoryPromptState {
-  slug: string;
+  slug: Category;
   label: string;
 }
 
@@ -34,7 +37,7 @@ interface CategoryPromptContextValue {
 
 const CategoryPromptContext = createContext<CategoryPromptContextValue | undefined>(undefined);
 
-function getPromptSections(mode: "us" | "alpha" | "none", sizes: string[]) {
+function getPromptSections(mode: CategorySizeMode, sizes: string[]) {
   if (mode === "us") {
     return [
       {
@@ -58,12 +61,12 @@ function getPromptSections(mode: "us" | "alpha" | "none", sizes: string[]) {
     ].filter((section) => section.sizes.length > 0);
   }
 
-  if (mode === "alpha") {
+  if (mode === "alpha" || mode === "glove") {
     return [
       {
-        id: "alpha",
-        title: "Tallas disponibles",
-        description: "Ropa y guantes",
+        id: mode,
+        title: mode === "glove" ? "Tallas de guantes" : "Tallas disponibles",
+        description: mode === "glove" ? "Guantes de arquero" : "Ropa deportiva",
         sizes,
       },
     ];
@@ -97,7 +100,7 @@ export const CategoryPromptProvider = ({ children }: { children: ReactNode }) =>
 
   const openCategoryPrompt = (category: CategoryPromptState) => {
     if (getCategorySizeMode(category.slug) === "none") {
-      navigate(`/${category.slug}`);
+      navigate(getPublicCategoryPath(category.slug));
       return;
     }
 
@@ -118,7 +121,9 @@ export const CategoryPromptProvider = ({ children }: { children: ReactNode }) =>
     }
 
     navigate(
-      `/${promptCategory.slug}?talla=${encodeURIComponent(normalizeCategorySize(selectedSize))}`,
+      `${getPublicCategoryPath(promptCategory.slug)}?talla=${encodeURIComponent(
+        normalizeCategorySize(selectedSize),
+      )}`,
     );
     closePrompt();
   };
@@ -128,7 +133,7 @@ export const CategoryPromptProvider = ({ children }: { children: ReactNode }) =>
       return;
     }
 
-    navigate(`/${promptCategory.slug}`);
+    navigate(getPublicCategoryPath(promptCategory.slug));
     closePrompt();
   };
 

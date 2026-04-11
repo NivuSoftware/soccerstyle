@@ -1,5 +1,5 @@
 export type Category = "pupos" | "pupillos" | "futsal" | "guantes" | "ropa" | "accesorios";
-export type CategorySizeMode = "us" | "alpha" | "none";
+export type CategorySizeMode = "us" | "alpha" | "glove" | "none";
 
 export const SIZES = [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45];
 
@@ -13,7 +13,7 @@ export const CATEGORIES: { slug: Category; label: string; }[] = [
 ];
 
 const FOOTWEAR_CATEGORIES: Category[] = ["pupos", "pupillos", "futsal"];
-const APPAREL_CATEGORIES: Category[] = ["ropa", "guantes"];
+const APPAREL_CATEGORIES: Category[] = ["ropa"];
 const ALPHA_SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 const GENERAL_US_SIZE_OPTIONS = [
   "8C",
@@ -50,6 +50,7 @@ const GENERAL_US_SIZE_OPTIONS = [
   "13",
 ];
 const GENERAL_ALPHA_SIZE_OPTIONS = ["XS", "S", "M", "L", "XL", "XXL"];
+const GLOVE_SIZE_OPTIONS = ["3", "4", "5", "6", "7", "8", "9", "10"];
 const US_TO_NATIONAL_SIZE_MAP: Record<string, string> = {
   "8C": "25",
   "9C": "26",
@@ -98,6 +99,10 @@ export function getCategorySizeMode(category: string | undefined): CategorySizeM
     return "alpha";
   }
 
+  if (category === "guantes") {
+    return "glove";
+  }
+
   return "none";
 }
 
@@ -140,6 +145,10 @@ export function getCategoryPromptSizes(category: string | undefined) {
 
   if (mode === "alpha") {
     return GENERAL_ALPHA_SIZE_OPTIONS;
+  }
+
+  if (mode === "glove") {
+    return GLOVE_SIZE_OPTIONS;
   }
 
   if (mode === "us") {

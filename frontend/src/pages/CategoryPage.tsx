@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowDownUp, LoaderCircle, Ruler, SlidersHorizontal, X } from "lucide-react";
+import { ArrowDownUp, ChevronLeft, ChevronRight, LoaderCircle, Ruler, SlidersHorizontal, X } from "lucide-react";
 import Seo from "@/components/seo/Seo";
 import {
   CATEGORIES,
@@ -35,6 +35,8 @@ const CategoryPage = () => {
   const categoryProducts = products.filter((product) => product.categoria === categoryConfig?.category);
   const categorySizeMode = getCategorySizeMode(categoryConfig?.category);
   const promptSizes = useMemo(() => getCategoryPromptSizes(categoryConfig?.category), [categoryConfig?.category]);
+  const PAGE_SIZE = 20;
+  const requestedPage = Number(searchParams.get("pagina")) || 1;
   const requestedSort = searchParams.get("orden");
   const selectedSort: SortValue = SORT_OPTIONS.some((option) => option.value === requestedSort)
     ? (requestedSort as SortValue)
@@ -76,9 +78,14 @@ const CategoryPage = () => {
     });
   }, [categoryProducts, selectedSize, selectedSort]);
 
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const currentPage = Math.min(Math.max(requestedPage, 1), totalPages || 1);
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
   const handleSearchParamUpdate = (
-    key: "talla" | "orden",
+    key: "talla" | "orden" | "pagina",
     value: string | null,
+    resetPage = false,
   ) => {
     const nextParams = new URLSearchParams(searchParams);
     if (value) {
@@ -86,15 +93,21 @@ const CategoryPage = () => {
     } else {
       nextParams.delete(key);
     }
+    if (resetPage) nextParams.delete("pagina");
     setSearchParams(nextParams);
   };
 
+  const handlePageChange = (page: number) => {
+    handleSearchParamUpdate("pagina", page > 1 ? String(page) : null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleSelectSize = (size: string | null) => {
-    handleSearchParamUpdate("talla", size);
+    handleSearchParamUpdate("talla", size, true);
   };
 
   const handleSortChange = (value: string) => {
-    handleSearchParamUpdate("orden", value);
+    handleSearchParamUpdate("orden", value, true);
   };
 
   const activeSortLabel =
@@ -165,6 +178,7 @@ const CategoryPage = () => {
                     ? ` en talla USA ${selectedSize}`
                     : ` en talla ${selectedSize}`
                   : ""}
+                {totalPages > 1 && ` · página ${currentPage} de ${totalPages}`}
               </p>
             </motion.div>
           </div>
@@ -285,24 +299,80 @@ const CategoryPage = () => {
                 {emptyStateMessage}
               </motion.p>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {filtered.map((product, i) => (
-                  <ProductCard
-                    key={product.id}
-                    index={i}
-                    showBrandBadge={false}
-                    product={{
-                      id: String(product.id),
-                      name: product.nombre,
-                      brand: category.label,
-                      price: product.precio,
-                      gift: product.gift,
-                      sizes: product.tallas_disponibles,
-                      image: product.imagen.url,
-                    }}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                  {paginated.map((product, i) => (
+                    <ProductCard
+                      key={product.id}
+                      index={i}
+                      showBrandBadge={false}
+                      product={{
+                        id: String(product.id),
+                        name: product.nombre,
+                        brand: category.label,
+                        price: product.precio,
+                        gift: product.gift,
+                        sizes: product.tallas_disponibles,
+                        image: product.imagen.url,
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-12">
+                    <button
+                      type="button"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="inline-flex items-center justify-center h-10 w-10 rounded-lg border border-border/70 bg-card text-muted-foreground transition hover:border-primary/50 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed"
+                      aria-label="Página anterior"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, idx) => idx + 1)
+                      .filter((page) =>
+                        page === 1 ||
+                        page === totalPages ||
+                        Math.abs(page - currentPage) <= 1
+                      )
+                      .reduce<(number | "...")[]>((acc, page, i, arr) => {
+                        if (i > 0 && (page as number) - (arr[i - 1] as number) > 1) acc.push("...");
+                        acc.push(page);
+                        return acc;
+                      }, [])
+                      .map((item, i) =>
+                        item === "..." ? (
+                          <span key={`ellipsis-${i}`} className="px-1 text-muted-foreground text-sm">…</span>
+                        ) : (
+                          <button
+                            key={item}
+                            type="button"
+                            onClick={() => handlePageChange(item as number)}
+                            className={`inline-flex items-center justify-center h-10 min-w-10 px-3 rounded-lg border text-sm font-medium transition ${
+                              currentPage === item
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border/70 bg-card text-muted-foreground hover:border-primary/50 hover:text-primary"
+                            }`}
+                          >
+                            {item}
+                          </button>
+                        )
+                      )}
+
+                    <button
+                      type="button"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="inline-flex items-center justify-center h-10 w-10 rounded-lg border border-border/70 bg-card text-muted-foreground transition hover:border-primary/50 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed"
+                      aria-label="Página siguiente"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </section>

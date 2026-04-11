@@ -66,7 +66,7 @@ const ContactPage = () => {
                     <h3 className="font-display text-2xl font-bold text-foreground">
                       {faq.question}
                     </h3>
-                    <p className="mt-4 text-sm leading-8 text-muted-foreground md:text-base">
+                    <p className="mt-4 text-justify text-sm leading-8 text-muted-foreground md:text-base">
                       {faq.answer}
                     </p>
                   </article>

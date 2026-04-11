@@ -37,8 +37,9 @@
     content="Compra zapatos de fútbol, pupillos, futsal y accesorios en Soccer Style. Atención en Riobamba, Latacunga y todo Ecuador." />
   <meta name="twitter:image" content="/images/logo.png" />
 
-  <!-- Imagen principal pre-cargada -->
+  <!-- Preloads -->
   <link rel="preload" as="image" href="/images/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
 
   <style>
     .whatsapp-fab {
@@ -76,11 +77,11 @@
     }
   </style>
 
-  <script type="module" src="/src/main.jsx"></script>
 </head>
 
 <body>
   <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
   <a class="whatsapp-fab" href="https://wa.me/593982138622" target="_blank" rel="noopener noreferrer"
     aria-label="Contactar por WhatsApp">
     <img
