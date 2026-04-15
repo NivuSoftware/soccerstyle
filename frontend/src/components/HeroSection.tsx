@@ -14,7 +14,7 @@ const HeroSection = () => {
   return (
     <section ref={ref} className="relative h-screen overflow-hidden flex items-center justify-center">
       {/* Parallax BG */}
-      <motion.div style={{ y, scale }} className="absolute inset-0">
+      <motion.div style={{ y, scale }} className="absolute -inset-x-4 -inset-y-12">
         <video
           className="w-full h-full object-cover"
           autoPlay
@@ -30,6 +30,8 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
       </motion.div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-[-1px] z-[1] h-32 bg-gradient-to-t from-background via-background/95 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-[-3px] z-[2] h-8 bg-background md:hidden" />
 
       {/* Content */}
       <motion.div style={{ opacity }} className="relative z-10 container mx-auto px-4">
