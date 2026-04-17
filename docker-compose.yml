@@ -2,10 +2,8 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: soccerstyle-postgres
-    environment:
-      POSTGRES_DB: soccerstyle
-      POSTGRES_USER: soccerstyle_admin
-      POSTGRES_PASSWORD: "SoccerStylePg_2026!v8x4K"
+    env_file:
+      - ./backend/.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -24,11 +22,13 @@ services:
     container_name: soccerstyle-backend
     env_file:
       - ./backend/.env
-    ports:
-      - "5000:5000"
     volumes:
-      - ./backend:/app
-    command: ["sh", "-c", "pip install --no-cache-dir -r requirements.txt && python seed_admin.py && python app.py"]
+      - product_images:/app/products
+      - banner_images:/app/banners
+    expose:
+      - "5000"
+    command: >
+      sh -c "python seed_admin.py && gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 --access-logfile - app:app"
     depends_on:
       postgres:
         condition: service_healthy
@@ -36,23 +36,16 @@ services:
     networks:
       - soccerstyle-network
 
-  soccerstyle_dev:
+  frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: soccerstyle-frontend
-    working_dir: /app
-    volumes:
-      - ./frontend:/app:cached
-      - /app/node_modules
     ports:
-      - "5173:5173"
-    environment:
-      - NODE_ENV=development
-      - VITE_API_PROXY_TARGET=http://backend:5000
-    command: ["sh", "-c", "npm install && npm run dev -- --host"]
+      - "80:80"
     depends_on:
       - backend
+    restart: unless-stopped
     networks:
       - soccerstyle-network
 
@@ -62,3 +55,5 @@ networks:
 
 volumes:
   postgres_data:
+  product_images:
+  banner_images:

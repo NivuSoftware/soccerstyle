@@ -6,3 +6,4 @@ marshmallow
 python-dotenv
 PyJWT
 psycopg[binary]
+gunicorn
