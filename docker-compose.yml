@@ -40,16 +40,7 @@ services:
       - banner_images:/app/banners
     expose:
       - "5000"
-    command: >
-      sh -c "python seed_admin.py &&
-             gunicorn
-               --bind 0.0.0.0:5000
-               --workers 2
-               --timeout 120
-               --max-requests 1000
-               --max-requests-jitter 100
-               --access-logfile -
-               app:app"
+    command: ["sh", "-c", "python seed_admin.py && gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 --max-requests 1000 --max-requests-jitter 100 --access-logfile - app:app"]
     depends_on:
       postgres:
         condition: service_healthy
