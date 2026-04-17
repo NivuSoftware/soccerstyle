@@ -4,6 +4,16 @@ services:
     container_name: soccerstyle-postgres
     env_file:
       - ./backend/.env
+    # Tuning para VPS con 1 GB RAM
+    command: >
+      postgres
+      -c shared_buffers=32MB
+      -c work_mem=4MB
+      -c maintenance_work_mem=32MB
+      -c effective_cache_size=128MB
+      -c max_connections=20
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=8MB
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -12,6 +22,10 @@ services:
       timeout: 5s
       retries: 12
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
     networks:
       - soccerstyle-network
 
@@ -27,12 +41,26 @@ services:
       - banner_images:/app/banners
     expose:
       - "5000"
+    # 2 workers para 1 vCore / 1 GB RAM
+    # --max-requests evita memory leaks acumulados
     command: >
-      sh -c "python seed_admin.py && gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 --access-logfile - app:app"
+      sh -c "python seed_admin.py &&
+             gunicorn
+               --bind 0.0.0.0:5000
+               --workers 2
+               --timeout 120
+               --max-requests 1000
+               --max-requests-jitter 100
+               --access-logfile -
+               app:app"
     depends_on:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 200M
     networks:
       - soccerstyle-network
 
@@ -46,6 +74,10 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 48M
     networks:
       - soccerstyle-network
 
