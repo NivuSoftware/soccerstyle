@@ -4,7 +4,6 @@ services:
     container_name: soccerstyle-postgres
     env_file:
       - ./backend/.env
-    # Tuning para VPS con 1 GB RAM
     command: >
       postgres
       -c shared_buffers=32MB
@@ -41,8 +40,6 @@ services:
       - banner_images:/app/banners
     expose:
       - "5000"
-    # 2 workers para 1 vCore / 1 GB RAM
-    # --max-requests evita memory leaks acumulados
     command: >
       sh -c "python seed_admin.py &&
              gunicorn
@@ -71,6 +68,9 @@ services:
     container_name: soccerstyle-frontend
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - backend
     restart: unless-stopped
