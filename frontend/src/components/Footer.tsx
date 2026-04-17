@@ -70,14 +70,26 @@ const Footer = () => {
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
           <p>© 2024 Soccer Style®. Todos los derechos reservados.</p>
-          <a
-            href={getWhatsAppLink()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-primary hover:underline"
-          >
-            Contáctanos por WhatsApp <ExternalLink size={12} />
-          </a>
+          <div className="flex items-center gap-4">
+            <a
+              href={getWhatsAppLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-primary hover:underline"
+            >
+              Contáctanos por WhatsApp <ExternalLink size={12} />
+            </a>
+            <span className="text-border">|</span>
+            <a
+              href="https://nivusoftware.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 hover:text-primary transition-colors"
+            >
+              <img src="/images/logo_nube.png" alt="NivuSoftware" className="w-4 h-4 object-contain" />
+              Desarrollado por NivuSoftware
+            </a>
+          </div>
         </div>
       </div>
     </footer>
